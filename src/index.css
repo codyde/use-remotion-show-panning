@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+:root {
+  --background: rgb(255 255 255);
+  --foreground: rgb(45 55 72);
+  --primary: rgb(102 126 234);
+  --accent: rgb(118 75 162);
+  --border: rgb(226 232 240);
+  --ring: rgb(102 126 234);
+}
