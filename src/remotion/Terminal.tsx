@@ -22,20 +22,20 @@ export const Terminal: React.FC<TerminalProps> = ({ children }) => {
       {/* Terminal Title Bar */}
       <div
         style={{
-          height: 40,
+          height: 56,
           background: 'linear-gradient(180deg, #3d3d3d 0%, #2d2d2d 100%)',
           borderBottom: '1px solid #1a1a1a',
           display: 'flex',
           alignItems: 'center',
-          padding: '0 16px',
-          gap: 8,
+          padding: '0 20px',
+          gap: 10,
         }}
       >
         {/* Traffic light buttons */}
         <div
           style={{
-            width: 14,
-            height: 14,
+            width: 18,
+            height: 18,
             borderRadius: '50%',
             background: '#ff5f57',
             boxShadow: 'inset 0 -1px 1px rgba(0,0,0,0.2)',
@@ -43,8 +43,8 @@ export const Terminal: React.FC<TerminalProps> = ({ children }) => {
         />
         <div
           style={{
-            width: 14,
-            height: 14,
+            width: 18,
+            height: 18,
             borderRadius: '50%',
             background: '#ffbd2e',
             boxShadow: 'inset 0 -1px 1px rgba(0,0,0,0.2)',
@@ -52,8 +52,8 @@ export const Terminal: React.FC<TerminalProps> = ({ children }) => {
         />
         <div
           style={{
-            width: 14,
-            height: 14,
+            width: 18,
+            height: 18,
             borderRadius: '50%',
             background: '#28ca42',
             boxShadow: 'inset 0 -1px 1px rgba(0,0,0,0.2)',
@@ -65,10 +65,10 @@ export const Terminal: React.FC<TerminalProps> = ({ children }) => {
             flex: 1,
             textAlign: 'center',
             color: '#999',
-            fontSize: 13,
+            fontSize: 18,
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             fontWeight: 500,
-            marginRight: 54,
+            marginRight: 72,
           }}
         >
           Terminal
@@ -78,9 +78,9 @@ export const Terminal: React.FC<TerminalProps> = ({ children }) => {
       <div
         style={{
           flex: 1,
-          padding: '32px 40px',
+          padding: '40px 48px',
           fontFamily: '"SF Mono", "Fira Code", "Consolas", monospace',
-          fontSize: 28,
+          fontSize: 36,
           lineHeight: 1.5,
           boxSizing: 'border-box',
           background: '#0d0d0d',

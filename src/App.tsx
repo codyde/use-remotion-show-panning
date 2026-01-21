@@ -1,12 +1,22 @@
 import { Player } from '@remotion/player'
+import { useState } from 'react'
 import { TerminalAnimation } from './remotion/TerminalAnimation'
 
 function App() {
+  const [copied, setCopied] = useState(false)
+  const command = 'npx skills add getsentry/sentry-agent-skills'
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(command)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   return (
     <div
       style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #1a0533 0%, #2d1b4e 25%, #4a1942 50%, #2d1b4e 75%, #1a0533 100%)',
+        background: 'linear-gradient(315deg, #2a0f2a 0%, #1a0a2e 30%, #0d0118 70%, #050008 100%)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -19,34 +29,69 @@ function App() {
       <div style={{ textAlign: 'center', marginBottom: 48 }}>
         <h1
           style={{
-            fontSize: 'clamp(32px, 5vw, 56px)',
+            fontSize: 'clamp(40px, 6vw, 72px)',
             fontWeight: 800,
             background: 'linear-gradient(135deg, #7553FF 0%, #A737B4 50%, #7553FF 100%)',
             backgroundClip: 'text',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             margin: 0,
+            marginBottom: 24,
             letterSpacing: '-0.02em',
           }}
         >
-          Sentry Agent Skills
+          Agent Skills... Sentry edition
         </h1>
-        <p
+
+        {/* Command Preview - now under h1 with click to copy */}
+        <button
+          onClick={handleCopy}
           style={{
-            fontSize: 18,
-            color: '#9E86FF',
-            marginTop: 16,
-            maxWidth: 500,
-            lineHeight: 1.6,
+            padding: '16px 28px',
+            background: 'rgba(117, 83, 255, 0.1)',
+            borderRadius: 12,
+            border: '1px solid rgba(117, 83, 255, 0.2)',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 12,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(117, 83, 255, 0.2)'
+            e.currentTarget.style.borderColor = 'rgba(117, 83, 255, 0.4)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(117, 83, 255, 0.1)'
+            e.currentTarget.style.borderColor = 'rgba(117, 83, 255, 0.2)'
           }}
         >
-          Watch the command being typed and executed in a cinematic 3D terminal animation
-        </p>
+          <code
+            style={{
+              fontFamily: 'SF Mono, Monaco, Consolas, monospace',
+              fontSize: 16,
+              color: '#E8E1FF',
+            }}
+          >
+            <span style={{ color: '#7553FF' }}>$</span> {command}
+          </code>
+          <span
+            style={{
+              fontSize: 12,
+              color: copied ? '#4ECDC4' : '#7553FF',
+              fontWeight: 500,
+              minWidth: 50,
+            }}
+          >
+            {copied ? 'Copied!' : 'Copy'}
+          </span>
+        </button>
       </div>
 
       {/* Video Player */}
       <div
         style={{
+          position: 'relative',
           borderRadius: 16,
           overflow: 'hidden',
           boxShadow: '0 30px 100px rgba(117, 83, 255, 0.3), 0 10px 40px rgba(0, 0, 0, 0.4)',
@@ -62,61 +107,14 @@ function App() {
           style={{
             width: 'min(960px, 90vw)',
             aspectRatio: '16/9',
+            mask: 'radial-gradient(ellipse 85% 85% at center, black 60%, transparent 100%)',
+            WebkitMask: 'radial-gradient(ellipse 85% 85% at center, black 60%, transparent 100%)',
           }}
           loop
           autoPlay
         />
       </div>
 
-      {/* Command Preview */}
-      <div
-        style={{
-          marginTop: 48,
-          padding: '20px 32px',
-          background: 'rgba(117, 83, 255, 0.1)',
-          borderRadius: 12,
-          border: '1px solid rgba(117, 83, 255, 0.2)',
-        }}
-      >
-        <code
-          style={{
-            fontFamily: 'SF Mono, Monaco, Consolas, monospace',
-            fontSize: 16,
-            color: '#E8E1FF',
-          }}
-        >
-          <span style={{ color: '#7553FF' }}>$</span>{' '}
-          npx skills add getsentry/sentry-agent-skills
-        </code>
-      </div>
-
-      {/* Footer */}
-      <p
-        style={{
-          marginTop: 48,
-          fontSize: 14,
-          color: 'rgba(158, 134, 255, 0.6)',
-        }}
-      >
-        Powered by{' '}
-        <a
-          href="https://remotion.dev"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: '#7553FF', textDecoration: 'none' }}
-        >
-          Remotion
-        </a>
-        {' '}+{' '}
-        <a
-          href="https://sentry.io"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: '#A737B4', textDecoration: 'none' }}
-        >
-          Sentry
-        </a>
-      </p>
     </div>
   )
 }

@@ -13,8 +13,6 @@ const SKILLS_BANNER = [
 ]
 
 const OUTPUT_LINES = [
-  { text: '', type: 'spacer' },
-  { text: '┌   skills', type: 'header' },
   { text: '│', type: 'line' },
   { text: '◇  Source: https://github.com/getsentry/sentry-agent-skills.git', type: 'info' },
   { text: '│', type: 'line' },
@@ -38,55 +36,70 @@ export const TerminalAnimation: React.FC = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
 
-  // Phase 1: Typing animation (frames 0-120)
-  const typingProgress = interpolate(frame, [30, 120], [0, COMMAND.length], {
+  // Phase 0: macOS-style app opening animation (frames 0-45)
+  const openingDuration = 45
+  const openingProgress = spring({
+    frame,
+    fps,
+    config: {
+      damping: 15,
+      stiffness: 80,
+      mass: 0.8,
+    },
+  })
+
+  // Scale animation: start small in the middle, expand outward
+  const scaleY = interpolate(openingProgress, [0, 1], [0.05, 1], {
+    extrapolateRight: 'clamp',
+  })
+  const scaleX = interpolate(openingProgress, [0, 1], [0.3, 1], {
+    extrapolateRight: 'clamp',
+  })
+
+  // Translate up from middle (starts at center, moves up slightly as it expands)
+  const translateYOpen = interpolate(openingProgress, [0, 1], [100, 0], {
+    extrapolateRight: 'clamp',
+  })
+
+  // Opacity fade in during opening
+  const openingOpacity = interpolate(frame, [0, 15], [0, 1], {
+    extrapolateRight: 'clamp',
+  })
+
+  // Phase 1: Typing animation (starts very quickly after opening begins)
+  const typingStartFrame = 20
+  const typingProgress = interpolate(frame, [typingStartFrame, typingStartFrame + 60], [0, COMMAND.length], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   })
   const typedCommand = COMMAND.slice(0, Math.floor(typingProgress))
 
   // Cursor blink
-  const cursorVisible = Math.floor(frame / 15) % 2 === 0 || frame < 120
+  const cursorVisible = Math.floor(frame / 15) % 2 === 0 || frame < typingStartFrame + 70
 
-  // Phase 2: Command execution (frame 140+)
-  const executeFrame = 140
+  // Phase 2: Command execution
+  const executeFrame = typingStartFrame + 70
 
-  // Phase 2a: Show ASCII banner (frames 140-170)
+  // Phase 2a: Show ASCII banner (instantly, all at once)
   const bannerStartFrame = executeFrame
-  const bannerLineDelay = 3
-  const visibleBannerLines = Math.min(
-    SKILLS_BANNER.length,
-    Math.max(0, Math.floor((frame - bannerStartFrame) / bannerLineDelay))
-  )
+  const showBanner = frame >= bannerStartFrame
 
-  // Phase 2b: Show output lines (frames 180+)
-  const outputStartFrame = 180
-  const outputLineDelay = 10
+  // Phase 2b: Show output lines
+  const outputStartFrame = executeFrame + 20
+  const outputLineDelay = 5
   const visibleOutputLines = Math.max(
     0,
     Math.floor((frame - outputStartFrame) / outputLineDelay)
   )
 
-  // Phase 2c: Show skills list (frames 300+)
-  const skillsStartFrame = 300
-  const skillLineDelay = 12
+  // Phase 2c: Show skills list
+  const skillsStartFrame = outputStartFrame + 50
+  const skillLineDelay = 6
   const visibleSkills = Math.max(
     0,
     Math.floor((frame - skillsStartFrame) / skillLineDelay)
   )
 
-  // 3D Panning transform - smooth continuous pan from tilted-left to tilted-right
-  const rotateX = interpolate(frame, [0, 450], [12, -8], {
-    extrapolateRight: 'clamp',
-  })
-  const rotateY = interpolate(frame, [0, 450], [-15, 15], {
-    extrapolateRight: 'clamp',
-  })
-
-  // Subtle horizontal drift
-  const translateX = interpolate(frame, [0, 450], [-30, 30], {
-    extrapolateRight: 'clamp',
-  })
 
   const getLineColor = (type: string) => {
     switch (type) {
@@ -114,34 +127,41 @@ export const TerminalAnimation: React.FC = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        perspective: 1200,
         overflow: 'hidden',
       }}
     >
       <div
         style={{
-          width: '85%',
-          height: '75%',
+          width: '92%',
+          height: '82%',
+          opacity: openingOpacity,
           transform: `
-            rotateX(${rotateX}deg)
-            rotateY(${rotateY}deg)
-            translateX(${translateX}px)
+            translateY(${translateYOpen}px)
+            scaleX(${scaleX})
+            scaleY(${scaleY})
           `,
-          transformStyle: 'preserve-3d',
+          transformOrigin: 'center center',
         }}
       >
-        <Terminal>
-          {/* Prompt line */}
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'relative',
+          }}
+        >
+          <Terminal>
+            {/* Prompt line */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <span style={{ color: '#A737B4', fontWeight: 600 }}>➜</span>
             <span style={{ color: '#7553FF', marginLeft: 12, fontWeight: 600 }}>~</span>
             <span style={{ color: '#E8E1FF', marginLeft: 16 }}>{typedCommand}</span>
-            {frame < 140 && (
+            {frame < executeFrame && (
               <span
                 style={{
                   display: 'inline-block',
-                  width: 12,
-                  height: 24,
+                  width: 20,
+                  height: 36,
                   background: cursorVisible ? '#7553FF' : 'transparent',
                   marginLeft: 2,
                   verticalAlign: 'middle',
@@ -151,10 +171,10 @@ export const TerminalAnimation: React.FC = () => {
             )}
           </div>
 
-          {/* ASCII Banner */}
-          {frame >= bannerStartFrame && (
-            <div style={{ marginTop: 20 }}>
-              {SKILLS_BANNER.slice(0, visibleBannerLines).map((line, index) => (
+          {/* ASCII Banner - appears instantly */}
+          {showBanner && (
+            <div style={{ marginTop: 20, marginBottom: 4 }}>
+              {SKILLS_BANNER.map((line, index) => (
                 <div
                   key={`banner-${index}`}
                   style={{
@@ -163,8 +183,8 @@ export const TerminalAnimation: React.FC = () => {
                     lineHeight: 1.1,
                     fontWeight: 700,
                     opacity: interpolate(
-                      frame - bannerStartFrame - index * bannerLineDelay,
-                      [0, 5],
+                      frame - bannerStartFrame,
+                      [0, 8],
                       [0, 1],
                       { extrapolateRight: 'clamp' }
                     ),
@@ -180,7 +200,7 @@ export const TerminalAnimation: React.FC = () => {
 
           {/* Output lines */}
           {frame >= outputStartFrame && (
-            <div style={{ marginTop: 16 }}>
+            <div style={{ marginTop: 2 }}>
               {OUTPUT_LINES.slice(0, visibleOutputLines).map((line, index) => (
                 <div
                   key={`output-${index}`}
@@ -246,7 +266,8 @@ export const TerminalAnimation: React.FC = () => {
               ))}
             </div>
           )}
-        </Terminal>
+          </Terminal>
+        </div>
       </div>
     </div>
   )
