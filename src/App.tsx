@@ -40,7 +40,7 @@ function App() {
             letterSpacing: '-0.02em',
           }}
         >
-          Agent Skills... Sentry edition
+          Agent Skills... Sentry Edition
         </h1>
 
         {/* Command Preview - now under h1 with click to copy */}
@@ -88,14 +88,10 @@ function App() {
         </button>
       </div>
 
-      {/* Video Player */}
+      {/* Video Player - Transparent background, terminal only */}
       <div
         style={{
           position: 'relative',
-          borderRadius: 16,
-          overflow: 'hidden',
-          boxShadow: '0 30px 100px rgba(117, 83, 255, 0.3), 0 10px 40px rgba(0, 0, 0, 0.4)',
-          border: '1px solid rgba(117, 83, 255, 0.2)',
         }}
       >
         <Player
@@ -107,8 +103,7 @@ function App() {
           style={{
             width: 'min(960px, 90vw)',
             aspectRatio: '16/9',
-            mask: 'radial-gradient(ellipse 85% 85% at center, black 60%, transparent 100%)',
-            WebkitMask: 'radial-gradient(ellipse 85% 85% at center, black 60%, transparent 100%)',
+            background: 'transparent',
           }}
           loop
           autoPlay

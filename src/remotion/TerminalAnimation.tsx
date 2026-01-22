@@ -123,7 +123,7 @@ export const TerminalAnimation: React.FC = () => {
       style={{
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(135deg, #0d0518 0%, #1a0a2e 50%, #0d0518 100%)',
+        background: 'transparent',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
